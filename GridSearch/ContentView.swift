@@ -72,6 +72,7 @@ struct ContentView: View {
                             Text(app.name).font(.system(size: 10, weight: .semibold))
                             Text(app.releaseDate).font(.system(size: 9, weight: .regular))
                             Text(app.copyright).font(.system(size: 9, weight: .regular))
+                            Spacer()
                     }
                       //  .padding(.horizontal)
                   //  .background(Color.red)
