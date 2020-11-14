@@ -15,11 +15,13 @@ struct Feed: Decodable{
     let results: [Result]
 }
 
-struct Result: Decodable{
+struct Result: Decodable, Hashable{
     let copyright, name, artworkUrl100, releaseDate: String
 }
 class GridViewModel: ObservableObject {
     @Published var items = 0..<5
+    
+    @Published var results = [Result]()
     
     init(){
 //        Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { (_) in
@@ -34,13 +36,16 @@ class GridViewModel: ObservableObject {
                 do {
                     let rss = try JSONDecoder().decode(RSS.self, from:data)
                     print(rss)
+                    self.results = rss.feed.results
                 }catch  {
                     print("failed to decode: \(error)")
+                    
                 }
                 }.resume()
     }
 }
 
+import KingfisherSwiftUI
 struct ContentView: View {
     
     @ObservedObject var vm = GridViewModel()
@@ -50,28 +55,30 @@ struct ContentView: View {
             ScrollView{
                 
                 LazyVGrid(columns: [
-                    GridItem(.flexible(minimum: 100, maximum: 200), spacing: 12),
+                    GridItem(.flexible(minimum: 50, maximum: 200), spacing: 16, alignment: .top),
                     
-                    GridItem(.flexible(minimum: 100, maximum: 200), spacing: 12),
-                    GridItem(.flexible(minimum: 100, maximum: 200))
+                    GridItem(.flexible(minimum: 50, maximum: 200), spacing: 16, alignment: .top),
+                    GridItem(.flexible(minimum: 50, maximum: 200), spacing: 16, alignment: .top)
                     
-                ], spacing: 16, content: /*@START_MENU_TOKEN@*/{
-                    ForEach(vm.items, id:\.self){
-                        num in
+                ], alignment: .leading, spacing: 16, content: /*@START_MENU_TOKEN@*/{
+                    ForEach(vm.results, id:\.self){
+                        app in
                     
-                        VStack(alignment:.leading){
-                            Spacer()
-                                .frame(width: 100, height: 100, alignment:.center).background(Color.blue)
-                        Text("App Title").font(.system(size: 10, weight: .semibold))
-                        Text("App Title").font(.system(size: 9, weight: .regular))
-                        Text("Release Date").font(.system(size: 9, weight: .regular))
+                        VStack(alignment:.leading, spacing: 4){
+                            
+                            KFImage(URL(string: app.artworkUrl100)).resizable().scaledToFit().cornerRadius(22)
+                            
+                      
+                            Text(app.name).font(.system(size: 10, weight: .semibold))
+                            Text(app.releaseDate).font(.system(size: 9, weight: .regular))
+                            Text(app.copyright).font(.system(size: 9, weight: .regular))
                     }
-//                    .padding()
-                    .background(Color.red)
+                      //  .padding(.horizontal)
+                  //  .background(Color.red)
                     
                     }
                 }).padding(.horizontal, 12)
-            }.navigationTitle("GRID SEARCH")
+            }.navigationTitle("Movie Search")
         }
        
     }
