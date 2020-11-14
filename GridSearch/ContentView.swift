@@ -69,7 +69,7 @@ struct ContentView: View {
                             KFImage(URL(string: app.artworkUrl100)).resizable().scaledToFit().cornerRadius(22)
                             
                       
-                            Text(app.name).font(.system(size: 10, weight: .semibold))
+                            Text(app.name).font(.system(size: 10, weight: .semibold)).padding(.top, 4)
                             Text(app.releaseDate).font(.system(size: 9, weight: .regular))
                             Text(app.copyright).font(.system(size: 9, weight: .regular))
                             Spacer()
