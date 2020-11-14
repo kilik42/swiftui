@@ -7,13 +7,37 @@
 
 import SwiftUI
 
+struct RSS: Decodable{
+    let feed: Feed
+}
+
+struct Feed: Decodable{
+    let results: [Result]
+}
+
+struct Result: Decodable{
+    let copyright, name, artworkUrl100, releaseDate: String
+}
 class GridViewModel: ObservableObject {
     @Published var items = 0..<5
     
     init(){
-        Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { (_) in
-            self.items = 0..<15 
-        }
+//        Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { (_) in
+//            self.items = 0..<15
+//        }
+        
+                    guard let url = URL(string: "https://rss.itunes.apple.com/api/v1/us/apple-music/coming-soon/all/100/explicit.json")else{
+                return
+            }
+            URLSession.shared.dataTask(with: url) { (data, resp, err) in
+                guard let data = data else{return}
+                do {
+                    let rss = try JSONDecoder().decode(RSS.self, from:data)
+                    print(rss)
+                }catch  {
+                    print("failed to decode: \(error)")
+                }
+                }.resume()
     }
 }
 
